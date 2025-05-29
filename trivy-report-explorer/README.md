@@ -1,12 +1,82 @@
-# Getting Started with Create React App
+# Trivy Report Explorer
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React web application to view, filter, and analyze various Trivy scan reports including vulnerability scans and EKS CIS benchmark reports.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Upload and parse multiple Trivy JSON report formats:
+  - Vulnerability scan reports
+  - EKS CIS benchmark reports
+  - Support for additional report types can be added easily
+- View findings in a sortable and filterable table
+- Filter by severity, status, resource type, and more
+- Sort by severity, resource, or count
+- View detailed information for each finding
+- GitHub-inspired look and feel
+- Responsive design for all devices
 
-### `npm start`
+## Generating Trivy Reports
+
+### Vulnerability Scan Reports
+
+Generate a vulnerability scan report using the following commands:
+
+```bash
+# For container images
+trivy image --format json -o trivy-report.json [image-name]
+
+# For filesystem
+trivy fs --format json -o trivy-report.json [path/to/project]
+
+# For Kubernetes clusters
+trivy k8s --format json -o trivy-report.json cluster
+```
+
+### EKS CIS Benchmark Reports
+
+Generate an EKS CIS benchmark report:
+
+```bash
+# For EKS clusters
+trivy k8s --format json -o eks-cis-report.json cluster --compliance=eks-cis
+```
+
+### Other Supported Reports
+
+Trivy Report Explorer can be extended to support other Trivy report types:
+
+```bash
+# For Terraform IaC scans
+trivy config --format json -o terraform-report.json [path/to/terraform/files]
+
+# For misconfiguration detection
+trivy config --format json -o misconfig-report.json [path/to/files]
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or later)
+- npm or yarn
+
+### Installation
+
+1. Clone this repository
+```bash
+git clone https://github.com/yourusername/trivy-report-explorer.git
+cd trivy-report-explorer
+```
+
+2. Install dependencies
+```bash
+npm install
+```
+
+3. Start the development server
+```bash
+npm start
+```
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
