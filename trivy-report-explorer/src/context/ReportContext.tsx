@@ -81,6 +81,22 @@ export const ReportProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         return [
           { id: 'severity', name: 'Severity' }
         ];
+      case ReportType.TRIVY_MISCONFIG:
+        return [
+          { id: 'severity', name: 'Severity' },
+          { id: 'status', name: 'Status' },
+          { id: 'resourceType', name: 'Resource Type' }
+        ];
+      case ReportType.TRIVY_LICENSE:
+        return [
+          { id: 'resourceType', name: 'Resource Type' },
+          { id: 'packageName', name: 'Package Name' }
+        ];
+      case ReportType.TRIVY_SECRET:
+        return [
+          { id: 'severity', name: 'Severity' },
+          { id: 'resourceType', name: 'Resource Type' }
+        ];
       default:
         return [
           { id: 'severity', name: 'Severity' }
