@@ -119,26 +119,29 @@ const Filters: React.FC = () => {
               Clear filters
             </button>
           )}
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="text-sm text-gray-500 hover:text-github-blue flex items-center"
-          >
-            {isExpanded ? (
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                </svg>
-                Collapse
-              </>
-            ) : (
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-                Expand
-              </>
-            )}
-          </button>
+          {/* Hide expand/collapse button for EKS CIS reports since they don't have additional filters */}
+          {reportType !== ReportType.EKS_CIS && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-sm text-gray-500 hover:text-github-blue flex items-center"
+            >
+              {isExpanded ? (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                  </svg>
+                  Collapse
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                  Expand
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
 
@@ -190,8 +193,8 @@ const Filters: React.FC = () => {
         </div>
       </div>
 
-      {/* Expandable additional filters */}
-      {isExpanded && (
+      {/* Expandable additional filters - don't show for EKS CIS reports */}
+      {isExpanded && reportType !== ReportType.EKS_CIS && (
         <div className="pt-4 border-t border-github-border grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Status Filter - For vulnerability and misconfiguration reports */}
           {(reportType === ReportType.TRIVY_VULNERABILITY || reportType === ReportType.TRIVY_MISCONFIG) && (
