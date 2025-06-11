@@ -1,0 +1,158 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "python-project",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Licenses": [
+        {
+          "PkgName": "django",
+          "FilePath": "requirements.txt",
+          "Name": "BSD-3-Clause",
+          "Confidence": 1.0,
+          "Link": "https://spdx.org/licenses/BSD-3-Clause.html",
+          "Category": "notice"
+        },
+        {
+          "PkgName": "requests",
+          "FilePath": "requirements.txt",
+          "Name": "Apache-2.0",
+          "Confidence": 1.0,
+          "Link": "https://spdx.org/licenses/Apache-2.0.html",
+          "Category": "notice"
+        },
+        {
+          "PkgName": "pillow",
+          "FilePath": "requirements.txt",
+          "Name": "HPND",
+          "Confidence": 0.95,
+          "Link": "https://spdx.org/licenses/HPND.html",
+          "Category": "notice"
+        },
+        {
+          "PkgName": "numpy",
+          "FilePath": "requirements.txt",
+          "Name": "BSD-3-Clause",
+          "Confidence": 1.0,
+          "Link": "https://spdx.org/licenses/BSD-3-Clause.html",
+          "Category": "notice"
+        },
+        {
+          "PkgName": "cryptography",
+          "FilePath": "requirements.txt",
+          "Name": "Apache-2.0",
+          "Confidence": 1.0,
+          "Link": "https://spdx.org/licenses/Apache-2.0.html",
+          "Category": "notice"
+        },
+        {
+          "PkgName": "problematic-gpl-lib",
+          "FilePath": "requirements.txt",
+          "Name": "GPL-3.0",
+          "Confidence": 1.0,
+          "Link": "https://spdx.org/licenses/GPL-3.0.html",
+          "Category": "restricted"
+        }
+      ]
+    },
+    {
+      "Target": "package.json",
+      "Class": "lang-pkgs",
+      "Type": "npm",
+      "Licenses": [
+        {
+          "PkgName": "express",
+          "FilePath": "package.json",
+          "Name": "MIT",
+          "Confidence": 1.0,
+          "Link": "https://spdx.org/licenses/MIT.html",
+          "Category": "notice"
+        },
+        {
+          "PkgName": "lodash",
+          "FilePath": "package.json",
+          "Name": "MIT",
+          "Confidence": 1.0,
+          "Link": "https://spdx.org/licenses/MIT.html",
+          "Category": "notice"
+        },
+        {
+          "PkgName": "react",
+          "FilePath": "package.json",
+          "Name": "MIT",
+          "Confidence": 1.0,
+          "Link": "https://spdx.org/licenses/MIT.html",
+          "Category": "notice"
+        },
+        {
+          "PkgName": "forbidden-commercial-lib",
+          "FilePath": "package.json",
+          "Name": "AGPL-3.0",
+          "Confidence": 1.0,
+          "Link": "https://spdx.org/licenses/AGPL-3.0.html",
+          "Category": "forbidden"
+        }
+      ]
+    },
+    {
+      "Target": "LICENSE",
+      "Class": "license-file",
+      "Type": "license",
+      "Licenses": [
+        {
+          "PkgName": "",
+          "FilePath": "LICENSE",
+          "Name": "MIT",
+          "Confidence": 1.0,
+          "Link": "https://spdx.org/licenses/MIT.html",
+          "Category": "notice"
+        }
+      ]
+    },
+    {
+      "Target": "vendor/third-party-lib/LICENSE.txt",
+      "Class": "license-file",
+      "Type": "license",
+      "Licenses": [
+        {
+          "PkgName": "",
+          "FilePath": "vendor/third-party-lib/LICENSE.txt",
+          "Name": "BSD-2-Clause",
+          "Confidence": 0.98,
+          "Link": "https://spdx.org/licenses/BSD-2-Clause.html",
+          "Category": "notice"
+        }
+      ]
+    },
+    {
+      "Target": "docs/COPYRIGHT",
+      "Class": "license-file",
+      "Type": "license",
+      "Licenses": [
+        {
+          "PkgName": "",
+          "FilePath": "docs/COPYRIGHT",
+          "Name": "Creative Commons Attribution 4.0 International",
+          "Confidence": 0.92,
+          "Link": "https://creativecommons.org/licenses/by/4.0/",
+          "Category": "notice"
+        }
+      ]
+    }
+  ]
+}

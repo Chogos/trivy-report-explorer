@@ -128,7 +128,7 @@ const FileUpload: React.FC = () => {
       {!error && (
         <div className="mt-4 p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-md">
           <p className="font-medium">Looking for a sample report?</p>
-          <div className="mt-2 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
+          <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             <button
               onClick={() => {
                 // Reset the file input
@@ -137,14 +137,65 @@ const FileUpload: React.FC = () => {
                   fileInput.value = '';
                 }
 
-                fetch('/sample-report.json')
+                fetch('/sample-python-vulnerability-report.json')
                   .then(response => response.text())
                   .then(text => handleFileRead(text))
                   .catch(err => setError(`Failed to load sample report: ${err.message}`));
               }}
-              className="text-sm text-github-blue hover:underline"
+              className="text-sm text-github-blue hover:underline text-left"
             >
-              Load sample Trivy vulnerability report
+              Load Vulnerability Report
+            </button>
+            <button
+              onClick={() => {
+                // Reset the file input
+                const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+                if (fileInput) {
+                  fileInput.value = '';
+                }
+
+                fetch('/sample-misconfig-report.json')
+                  .then(response => response.text())
+                  .then(text => handleFileRead(text))
+                  .catch(err => setError(`Failed to load sample report: ${err.message}`));
+              }}
+              className="text-sm text-github-blue hover:underline text-left"
+            >
+              Load Misconfiguration Report
+            </button>
+            <button
+              onClick={() => {
+                // Reset the file input
+                const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+                if (fileInput) {
+                  fileInput.value = '';
+                }
+
+                fetch('/sample-license-report.json')
+                  .then(response => response.text())
+                  .then(text => handleFileRead(text))
+                  .catch(err => setError(`Failed to load sample report: ${err.message}`));
+              }}
+              className="text-sm text-github-blue hover:underline text-left"
+            >
+              Load License Report
+            </button>
+            <button
+              onClick={() => {
+                // Reset the file input
+                const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+                if (fileInput) {
+                  fileInput.value = '';
+                }
+
+                fetch('/sample-secret-report.json')
+                  .then(response => response.text())
+                  .then(text => handleFileRead(text))
+                  .catch(err => setError(`Failed to load sample report: ${err.message}`));
+              }}
+              className="text-sm text-github-blue hover:underline text-left"
+            >
+              Load Secret Report
             </button>
             <button
               onClick={() => {
@@ -159,9 +210,9 @@ const FileUpload: React.FC = () => {
                   .then(text => handleFileRead(text))
                   .catch(err => setError(`Failed to load sample report: ${err.message}`));
               }}
-              className="text-sm text-github-blue hover:underline"
+              className="text-sm text-github-blue hover:underline text-left"
             >
-              Load sample EKS CIS report
+              Load EKS CIS Report
             </button>
           </div>
         </div>
