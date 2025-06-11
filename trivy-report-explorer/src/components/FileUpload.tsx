@@ -35,6 +35,8 @@ const FileUpload: React.FC = () => {
       };
       reader.readAsText(file);
     }
+    // Reset the input value to allow uploading the same file again
+    e.target.value = '';
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -58,6 +60,11 @@ const FileUpload: React.FC = () => {
         handleFileRead(content);
       };
       reader.readAsText(file);
+    }
+    // Reset the file input to ensure onChange works for subsequent uploads
+    const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
     }
   };
 
@@ -124,6 +131,12 @@ const FileUpload: React.FC = () => {
           <div className="mt-2 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
             <button
               onClick={() => {
+                // Reset the file input
+                const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+                if (fileInput) {
+                  fileInput.value = '';
+                }
+
                 fetch('/sample-report.json')
                   .then(response => response.text())
                   .then(text => handleFileRead(text))
@@ -135,6 +148,12 @@ const FileUpload: React.FC = () => {
             </button>
             <button
               onClick={() => {
+                // Reset the file input
+                const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+                if (fileInput) {
+                  fileInput.value = '';
+                }
+
                 fetch('/sample-eks-report.json')
                   .then(response => response.text())
                   .then(text => handleFileRead(text))
