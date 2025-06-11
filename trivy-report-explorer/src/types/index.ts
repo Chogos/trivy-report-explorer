@@ -190,9 +190,10 @@ export interface FilterOptions {
   status: string[];
   resourceType: string[];
   packageName: string;
+  hideZeroFailedTests: boolean;
 }
 
 export interface SortOptions {
-  field: 'severity' | 'count' | 'resource';
+  field: 'severity' | 'count' | 'resource' | 'package';
   direction: 'asc' | 'desc';
 }

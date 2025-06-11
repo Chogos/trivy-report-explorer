@@ -71,6 +71,13 @@ const Filters: React.FC = () => {
     });
   };
 
+  const handleHideZeroFailedTestsChange = (checked: boolean) => {
+    setFilters({
+      ...filters,
+      hideZeroFailedTests: checked
+    });
+  };
+
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const [field, direction] = e.target.value.split('-');
     setSortOptions({
@@ -85,6 +92,7 @@ const Filters: React.FC = () => {
       status: [],
       resourceType: [],
       packageName: '',
+      hideZeroFailedTests: false,
     });
   };
 
@@ -92,7 +100,8 @@ const Filters: React.FC = () => {
   const activeFilterCount = filters.severity.length +
     filters.status.length +
     filters.resourceType.length +
-    (filters.packageName ? 1 : 0);
+    (filters.packageName ? 1 : 0) +
+    (filters.hideZeroFailedTests ? 1 : 0);
 
   const filterableFields = getFilterableFields();
 
@@ -166,6 +175,24 @@ const Filters: React.FC = () => {
             ))}
           </div>
         </div>
+
+        {/* EKS-specific filter: Hide controls with zero failed tests */}
+        {reportType === ReportType.EKS_CIS && (
+          <div className="mb-4 w-full">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="hide-zero-failed"
+                checked={filters.hideZeroFailedTests}
+                onChange={(e) => handleHideZeroFailedTestsChange(e.target.checked)}
+                className="w-4 h-4 text-github-blue focus:ring-github-blue border-gray-300 rounded"
+              />
+              <label htmlFor="hide-zero-failed" className="ml-2 text-sm font-medium text-gray-700 cursor-pointer">
+                Hide controls with zero failed tests
+              </label>
+            </div>
+          </div>
+        )}
 
         {/* Sort Controls */}
         <div className="w-full sm:w-auto">
@@ -339,6 +366,22 @@ const Filters: React.FC = () => {
                   Package: "{filters.packageName}"
                   <button
                     onClick={() => setFilters({...filters, packageName: ''})}
+                    className="ml-1 text-gray-500 hover:text-gray-700"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </span>
+              )}
+
+              {filters.hideZeroFailedTests && (
+                <span
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100"
+                >
+                  Hide zero failed tests
+                  <button
+                    onClick={() => handleHideZeroFailedTestsChange(false)}
                     className="ml-1 text-gray-500 hover:text-gray-700"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">

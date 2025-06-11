@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useReport } from '../context/ReportContext';
-import { getAllReportTypes } from '../utils/reportTypesRegistry';
+import { getAllReportConfigs } from '../utils/reportConfigRegistry';
 
 const FileUpload: React.FC = () => {
   const { setReport } = useReport();
@@ -62,7 +62,7 @@ const FileUpload: React.FC = () => {
   };
 
   // Get all supported report types from the registry
-  const reportTypes = getAllReportTypes();
+  const reportTypes = getAllReportConfigs();
 
   return (
     <div className="mb-8">

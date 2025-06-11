@@ -9,9 +9,16 @@ import {
   EKSCISControl,
   SupportedReport,
   ReportType,
-  BaseFinding
+  BaseFinding,
+  MisconfigReport,
+  LicenseReport,
+  SecretReport
 } from '../types';
-import { detectReportType, getReportTypeInfo } from '../utils/reportTypesRegistry';
+import {
+  detectReportTypeFromRegistry,
+  getReportConfig,
+  getAllReportConfigs
+} from '../utils/reportConfigRegistry';
 
 interface ReportContextType {
   report: SupportedReport | null;
@@ -37,6 +44,7 @@ export const ReportProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     status: [],
     resourceType: [],
     packageName: '',
+    hideZeroFailedTests: false,
   });
   const [sortOptions, setSortOptions] = useState<SortOptions>({
     field: 'severity',
@@ -44,7 +52,7 @@ export const ReportProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   });
 
   const setReport = (json: any) => {
-    const { type, transformedData } = detectReportType(json);
+    const { type, config, transformedData } = detectReportTypeFromRegistry(json);
 
     if (transformedData) {
       setReportState(transformedData);
@@ -69,168 +77,100 @@ export const ReportProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   };
 
   const getFilterableFields = () => {
-    switch (reportType) {
-      case ReportType.TRIVY_VULNERABILITY:
-        return [
-          { id: 'severity', name: 'Severity' },
-          { id: 'status', name: 'Status' },
-          { id: 'resourceType', name: 'Resource Type' },
-          { id: 'packageName', name: 'Package Name' }
-        ];
-      case ReportType.EKS_CIS:
-        return [
-          { id: 'severity', name: 'Severity' }
-        ];
-      case ReportType.TRIVY_MISCONFIG:
-        return [
-          { id: 'severity', name: 'Severity' },
-          { id: 'status', name: 'Status' },
-          { id: 'resourceType', name: 'Resource Type' }
-        ];
-      case ReportType.TRIVY_LICENSE:
-        return [
-          { id: 'resourceType', name: 'Resource Type' },
-          { id: 'packageName', name: 'Package Name' }
-        ];
-      case ReportType.TRIVY_SECRET:
-        return [
-          { id: 'severity', name: 'Severity' },
-          { id: 'resourceType', name: 'Resource Type' }
-        ];
-      default:
-        return [
-          { id: 'severity', name: 'Severity' }
-        ];
-    }
+    const config = getReportConfig(reportType);
+    return config.availableFilters.map(filter => ({
+      id: filter.id,
+      name: filter.name
+    }));
   };
 
   // Convert any report type to a list of findings for consistent UI display
   const getFilteredFindings = (): BaseFinding[] => {
     if (!report) return [];
 
-    // Handle Trivy vulnerability reports
-    if (reportType === ReportType.TRIVY_VULNERABILITY) {
-      const trivyReport = report as TrivyReport;
-      let allVulnerabilities: Vulnerability[] = [];
+    const config = getReportConfig(reportType);
 
-      trivyReport.Results.forEach(result => {
-        if (result.Vulnerabilities) {
-          // Add target information to each vulnerability for reference
-          const vulnerabilitiesWithContext = result.Vulnerabilities.map(vuln => ({
-            ...vuln,
-            Target: result.Target,
-            Class: result.Class,
-            Type: result.Type,
-          }));
+    // Extract raw data based on report type
+    let rawData: any[] = [];
 
-          allVulnerabilities = [...allVulnerabilities, ...vulnerabilitiesWithContext];
-        }
-      });
+    switch (reportType) {
+      case ReportType.TRIVY_VULNERABILITY:
+        const trivyReport = report as TrivyReport;
+        trivyReport.Results.forEach(result => {
+          if (result.Vulnerabilities) {
+            const vulnerabilitiesWithContext = result.Vulnerabilities.map(vuln => ({
+              ...vuln,
+              Target: result.Target,
+              Class: result.Class,
+              Type: result.Type,
+            }));
+            rawData = [...rawData, ...vulnerabilitiesWithContext];
+          }
+        });
+        break;
 
-      // Apply filters
-      let filtered = allVulnerabilities;
+      case ReportType.EKS_CIS:
+        const eksReport = report as EKSCISReport;
+        rawData = [...eksReport.SummaryControls];
+        break;
 
-      if (filters.severity.length > 0) {
-        filtered = filtered.filter(v => filters.severity.includes(v.Severity));
-      }
+      case ReportType.TRIVY_MISCONFIG:
+        const misconfigReport = report as MisconfigReport;
+        misconfigReport.Results.forEach(result => {
+          if (result.Misconfigurations) {
+            const misconfigsWithContext = result.Misconfigurations.map(misconfig => ({
+              ...misconfig,
+              Target: result.Target,
+              Class: result.Class,
+              Type: result.Type,
+            }));
+            rawData = [...rawData, ...misconfigsWithContext];
+          }
+        });
+        break;
 
-      if (filters.status.length > 0) {
-        filtered = filtered.filter(v => v.Status && filters.status.includes(v.Status));
-      }
+      case ReportType.TRIVY_LICENSE:
+        const licenseReport = report as LicenseReport;
+        licenseReport.Results.forEach(result => {
+          if (result.Licenses) {
+            const licensesWithContext = result.Licenses.map(license => ({
+              ...license,
+              Target: result.Target,
+              Class: result.Class,
+              Type: result.Type,
+            }));
+            rawData = [...rawData, ...licensesWithContext];
+          }
+        });
+        break;
 
-      if (filters.resourceType.length > 0) {
-        filtered = filtered.filter(v => v.Type && filters.resourceType.includes(v.Type));
-      }
+      case ReportType.TRIVY_SECRET:
+        const secretReport = report as SecretReport;
+        secretReport.Results.forEach(result => {
+          if (result.Secrets) {
+            const secretsWithContext = result.Secrets.map(secret => ({
+              ...secret,
+              Target: result.Target,
+              Class: result.Class,
+              Type: result.Type,
+            }));
+            rawData = [...rawData, ...secretsWithContext];
+          }
+        });
+        break;
 
-      if (filters.packageName) {
-        filtered = filtered.filter(v =>
-          v.PkgName.toLowerCase().includes(filters.packageName.toLowerCase())
-        );
-      }
-
-      // Apply sorting
-      filtered.sort((a, b) => {
-        const direction = sortOptions.direction === 'asc' ? 1 : -1;
-
-        switch (sortOptions.field) {
-          case 'severity':
-            const severityOrder: {[key: string]: number} = {
-              CRITICAL: 4,
-              HIGH: 3,
-              MEDIUM: 2,
-              LOW: 1,
-              UNKNOWN: 0
-            };
-            const aSeverity = severityOrder[a.Severity] || 0;
-            const bSeverity = severityOrder[b.Severity] || 0;
-            return (bSeverity - aSeverity) * direction;
-
-          case 'resource':
-            return ((a.Target || '').localeCompare(b.Target || '')) * direction;
-
-          default:
-            return 0;
-        }
-      });
-
-      // Map vulnerabilities to BaseFinding format for consistent UI display
-      return filtered.map(vuln => ({
-        id: vuln.VulnerabilityID,
-        title: vuln.Title || vuln.VulnerabilityID,
-        description: vuln.Description,
-        severity: vuln.Severity,
-        type: 'vulnerability',
-        ...vuln // Include original vulnerability data for specific rendering
-      }));
-    }
-    // Handle EKS CIS reports
-    else if (reportType === ReportType.EKS_CIS) {
-      const eksReport = report as EKSCISReport;
-      let controls = [...eksReport.SummaryControls];
-
-      // Apply severity filter
-      if (filters.severity.length > 0) {
-        controls = controls.filter(control =>
-          filters.severity.includes(control.Severity)
-        );
-      }
-
-      // Apply sorting
-      controls.sort((a, b) => {
-        const direction = sortOptions.direction === 'asc' ? 1 : -1;
-
-        switch (sortOptions.field) {
-          case 'severity':
-            const severityOrder: {[key: string]: number} = {
-              CRITICAL: 4,
-              HIGH: 3,
-              MEDIUM: 2,
-              LOW: 1,
-              UNKNOWN: 0
-            };
-            const aSeverity = severityOrder[a.Severity] || 0;
-            const bSeverity = severityOrder[b.Severity] || 0;
-            return (bSeverity - aSeverity) * direction;
-
-          case 'resource':
-            return a.ID.localeCompare(b.ID) * direction;
-
-          default:
-            return 0;
-        }
-      });
-
-      // Map controls to BaseFinding format for consistent UI display
-      return controls.map(control => ({
-        id: control.ID,
-        title: control.Name,
-        severity: control.Severity,
-        type: 'eks-control',
-        ...control // Include original control data for specific rendering
-      }));
+      default:
+        return [];
     }
 
-    return [];
+    // Apply filtering using the report config
+    const filtered = config.filterFn(rawData, filters);
+
+    // Apply sorting using the report config
+    const sorted = config.sortFn(filtered, sortOptions);
+
+    // Map to BaseFinding format
+    return config.mapToBaseFinding(sorted);
   };
 
   const value = {

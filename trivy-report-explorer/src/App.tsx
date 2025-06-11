@@ -1,6 +1,6 @@
 import React from 'react';
 import FileUpload from './components/FileUpload';
-import Filters from './components/Filters';
+import FilterManager from './components/FilterManager';
 import ReportViewer from './components/ReportViewer';
 import { ReportProvider, useReport } from './context/ReportContext';
 import { ReportType } from './types';
@@ -37,7 +37,7 @@ const AppContent: React.FC = () => {
               </p>
             </div>
 
-            <Filters />
+            <FilterManager />
             <ReportViewer />
           </div>
         )}
