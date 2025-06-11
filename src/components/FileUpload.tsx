@@ -7,6 +7,12 @@ const FileUpload: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
+  // Helper function to get the correct public URL for sample files
+  const getSampleFileUrl = (filename: string) => {
+    const publicUrl = process.env.PUBLIC_URL || '';
+    return `${publicUrl}/samples/${filename}`;
+  };
+
   const handleFileRead = (content: string) => {
     try {
       // First, try to parse the JSON
@@ -137,7 +143,7 @@ const FileUpload: React.FC = () => {
                   fileInput.value = '';
                 }
 
-                fetch('/sample-python-vulnerability-report.json')
+                fetch(getSampleFileUrl('sample-python-vulnerability-report.json'))
                   .then(response => response.text())
                   .then(text => handleFileRead(text))
                   .catch(err => setError(`Failed to load sample report: ${err.message}`));
@@ -154,7 +160,7 @@ const FileUpload: React.FC = () => {
                   fileInput.value = '';
                 }
 
-                fetch('/sample-misconfig-report.json')
+                fetch(getSampleFileUrl('sample-misconfig-report.json'))
                   .then(response => response.text())
                   .then(text => handleFileRead(text))
                   .catch(err => setError(`Failed to load sample report: ${err.message}`));
@@ -171,7 +177,7 @@ const FileUpload: React.FC = () => {
                   fileInput.value = '';
                 }
 
-                fetch('/sample-license-report.json')
+                fetch(getSampleFileUrl('sample-license-report.json'))
                   .then(response => response.text())
                   .then(text => handleFileRead(text))
                   .catch(err => setError(`Failed to load sample report: ${err.message}`));
@@ -188,7 +194,7 @@ const FileUpload: React.FC = () => {
                   fileInput.value = '';
                 }
 
-                fetch('/sample-secret-report.json')
+                fetch(getSampleFileUrl('sample-secret-report.json'))
                   .then(response => response.text())
                   .then(text => handleFileRead(text))
                   .catch(err => setError(`Failed to load sample report: ${err.message}`));
@@ -205,7 +211,7 @@ const FileUpload: React.FC = () => {
                   fileInput.value = '';
                 }
 
-                fetch('/sample-eks-report.json')
+                fetch(getSampleFileUrl('sample-eks-report.json'))
                   .then(response => response.text())
                   .then(text => handleFileRead(text))
                   .catch(err => setError(`Failed to load sample report: ${err.message}`));
