@@ -32,8 +32,7 @@ const AppContent: React.FC = () => {
             <div className="mb-4">
               <h2 className="text-xl font-bold">{getReportTitle()}</h2>
               <p className="text-sm text-gray-600">
-                {getReportDescription()} |
-                Scanned: {new Date().toLocaleDateString()}
+                {getReportDescription()}
               </p>
             </div>
 
