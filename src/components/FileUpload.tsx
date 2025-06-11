@@ -14,6 +14,46 @@ const FileUpload: React.FC = () => {
     return `${publicUrl}/samples/${filename}`;
   };
 
+  // Sample reports configuration
+  const sampleReports = [
+    {
+      filename: 'sample-python-vulnerability-report.json',
+      displayName: 'Load Vulnerability Report',
+    },
+    {
+      filename: 'sample-misconfig-report.json',
+      displayName: 'Load Misconfiguration Report',
+    },
+    {
+      filename: 'sample-license-report.json',
+      displayName: 'Load License Report',
+    },
+    {
+      filename: 'sample-secret-report.json',
+      displayName: 'Load Secret Report',
+    },
+    {
+      filename: 'sample-eks-report.json',
+      displayName: 'Load EKS CIS Report',
+    },
+  ];
+
+  // Helper function to load a sample report
+  const loadSampleReport = (filename: string) => {
+    // Reset the file input
+    const fileInput = document.getElementById(
+      'file-upload'
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+
+    fetch(getSampleFileUrl(filename))
+      .then(response => response.text())
+      .then(text => handleFileRead(text))
+      .catch(err => setError(`Failed to load sample report: ${err.message}`));
+  };
+
   const handleFileRead = (content: string) => {
     try {
       // First, try to parse the JSON
@@ -155,113 +195,15 @@ const FileUpload: React.FC = () => {
         <div className='mt-4 p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-md'>
           <p className='font-medium'>Looking for a sample report?</p>
           <div className='mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2'>
-            <button
-              onClick={() => {
-                // Reset the file input
-                const fileInput = document.getElementById(
-                  'file-upload'
-                ) as HTMLInputElement;
-                if (fileInput) {
-                  fileInput.value = '';
-                }
-
-                fetch(
-                  getSampleFileUrl('sample-python-vulnerability-report.json')
-                )
-                  .then(response => response.text())
-                  .then(text => handleFileRead(text))
-                  .catch(err =>
-                    setError(`Failed to load sample report: ${err.message}`)
-                  );
-              }}
-              className='text-sm text-github-blue hover:underline text-left'
-            >
-              Load Vulnerability Report
-            </button>
-            <button
-              onClick={() => {
-                // Reset the file input
-                const fileInput = document.getElementById(
-                  'file-upload'
-                ) as HTMLInputElement;
-                if (fileInput) {
-                  fileInput.value = '';
-                }
-
-                fetch(getSampleFileUrl('sample-misconfig-report.json'))
-                  .then(response => response.text())
-                  .then(text => handleFileRead(text))
-                  .catch(err =>
-                    setError(`Failed to load sample report: ${err.message}`)
-                  );
-              }}
-              className='text-sm text-github-blue hover:underline text-left'
-            >
-              Load Misconfiguration Report
-            </button>
-            <button
-              onClick={() => {
-                // Reset the file input
-                const fileInput = document.getElementById(
-                  'file-upload'
-                ) as HTMLInputElement;
-                if (fileInput) {
-                  fileInput.value = '';
-                }
-
-                fetch(getSampleFileUrl('sample-license-report.json'))
-                  .then(response => response.text())
-                  .then(text => handleFileRead(text))
-                  .catch(err =>
-                    setError(`Failed to load sample report: ${err.message}`)
-                  );
-              }}
-              className='text-sm text-github-blue hover:underline text-left'
-            >
-              Load License Report
-            </button>
-            <button
-              onClick={() => {
-                // Reset the file input
-                const fileInput = document.getElementById(
-                  'file-upload'
-                ) as HTMLInputElement;
-                if (fileInput) {
-                  fileInput.value = '';
-                }
-
-                fetch(getSampleFileUrl('sample-secret-report.json'))
-                  .then(response => response.text())
-                  .then(text => handleFileRead(text))
-                  .catch(err =>
-                    setError(`Failed to load sample report: ${err.message}`)
-                  );
-              }}
-              className='text-sm text-github-blue hover:underline text-left'
-            >
-              Load Secret Report
-            </button>
-            <button
-              onClick={() => {
-                // Reset the file input
-                const fileInput = document.getElementById(
-                  'file-upload'
-                ) as HTMLInputElement;
-                if (fileInput) {
-                  fileInput.value = '';
-                }
-
-                fetch(getSampleFileUrl('sample-eks-report.json'))
-                  .then(response => response.text())
-                  .then(text => handleFileRead(text))
-                  .catch(err =>
-                    setError(`Failed to load sample report: ${err.message}`)
-                  );
-              }}
-              className='text-sm text-github-blue hover:underline text-left'
-            >
-              Load EKS CIS Report
-            </button>
+            {sampleReports.map((report, index) => (
+              <button
+                key={index}
+                onClick={() => loadSampleReport(report.filename)}
+                className='text-sm text-github-blue hover:underline text-left'
+              >
+                {report.displayName}
+              </button>
+            ))}
           </div>
         </div>
       )}
