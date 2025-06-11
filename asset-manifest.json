@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/trivy-report-explorer/static/css/main.698b5b09.css",
+    "main.js": "/trivy-report-explorer/static/js/main.2919590a.js",
+    "static/js/453.7a6e77df.chunk.js": "/trivy-report-explorer/static/js/453.7a6e77df.chunk.js",
+    "index.html": "/trivy-report-explorer/index.html",
+    "main.698b5b09.css.map": "/trivy-report-explorer/static/css/main.698b5b09.css.map",
+    "main.2919590a.js.map": "/trivy-report-explorer/static/js/main.2919590a.js.map",
+    "453.7a6e77df.chunk.js.map": "/trivy-report-explorer/static/js/453.7a6e77df.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.698b5b09.css",
+    "static/js/main.2919590a.js"
+  ]
+}
