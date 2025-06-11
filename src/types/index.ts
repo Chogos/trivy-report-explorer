@@ -163,7 +163,12 @@ export interface BaseFinding {
 }
 
 // Union type for all supported report types
-export type SupportedReport = TrivyReport | EKSCISReport | MisconfigReport | LicenseReport | SecretReport;
+export type SupportedReport =
+  | TrivyReport
+  | EKSCISReport
+  | MisconfigReport
+  | LicenseReport
+  | SecretReport;
 
 // Type to determine report type
 export enum ReportType {
@@ -172,7 +177,7 @@ export enum ReportType {
   TRIVY_MISCONFIG = 'TRIVY_MISCONFIG',
   TRIVY_LICENSE = 'TRIVY_LICENSE',
   TRIVY_SECRET = 'TRIVY_SECRET',
-  UNKNOWN = 'UNKNOWN'
+  UNKNOWN = 'UNKNOWN',
 }
 
 // Registry of report types and their properties

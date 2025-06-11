@@ -1,23 +1,21 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
+
 import {
   BaseReport,
   TrivyReport,
-  Vulnerability,
   FilterOptions,
   SortOptions,
   EKSCISReport,
-  EKSCISControl,
   SupportedReport,
   ReportType,
   BaseFinding,
   MisconfigReport,
   LicenseReport,
-  SecretReport
+  SecretReport,
 } from '../types';
 import {
   detectReportTypeFromRegistry,
   getReportConfig,
-  getAllReportConfigs
 } from '../utils/reportConfigRegistry';
 
 interface ReportContextType {
@@ -31,12 +29,14 @@ interface ReportContextType {
   getFilteredFindings: () => BaseFinding[];
   getReportTitle: () => string;
   getReportDescription: () => string;
-  getFilterableFields: () => { id: string, name: string }[];
+  getFilterableFields: () => { id: string; name: string }[];
 }
 
 const ReportContext = createContext<ReportContextType | undefined>(undefined);
 
-export const ReportProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ReportProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [report, setReportState] = useState<SupportedReport | null>(null);
   const [reportType, setReportType] = useState<ReportType>(ReportType.UNKNOWN);
   const [filters, setFilters] = useState<FilterOptions>({
@@ -52,26 +52,30 @@ export const ReportProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   });
 
   const setReport = (json: any) => {
-    const { type, config, transformedData } = detectReportTypeFromRegistry(json);
+    const { type, transformedData } = detectReportTypeFromRegistry(json);
 
     if (transformedData) {
       setReportState(transformedData);
       setReportType(type);
     } else {
-      console.error("Unknown report type");
+      console.error('Unknown report type');
       setReportState(null);
       setReportType(ReportType.UNKNOWN);
     }
   };
 
   const getReportTitle = (): string => {
-    if (!report) return '';
+    if (!report) {
+      return '';
+    }
 
     return (report as BaseReport).displayName || 'Unknown Report';
   };
 
   const getReportDescription = (): string => {
-    if (!report) return '';
+    if (!report) {
+      return '';
+    }
 
     return (report as BaseReport).description || '';
   };
@@ -80,13 +84,15 @@ export const ReportProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const config = getReportConfig(reportType);
     return config.availableFilters.map(filter => ({
       id: filter.id,
-      name: filter.name
+      name: filter.name,
     }));
   };
 
   // Convert any report type to a list of findings for consistent UI display
   const getFilteredFindings = (): BaseFinding[] => {
-    if (!report) return [];
+    if (!report) {
+      return [];
+    }
 
     const config = getReportConfig(reportType);
 
@@ -98,12 +104,14 @@ export const ReportProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         const trivyReport = report as TrivyReport;
         trivyReport.Results.forEach(result => {
           if (result.Vulnerabilities) {
-            const vulnerabilitiesWithContext = result.Vulnerabilities.map(vuln => ({
-              ...vuln,
-              Target: result.Target,
-              Class: result.Class,
-              Type: result.Type,
-            }));
+            const vulnerabilitiesWithContext = result.Vulnerabilities.map(
+              vuln => ({
+                ...vuln,
+                Target: result.Target,
+                Class: result.Class,
+                Type: result.Type,
+              })
+            );
             rawData = [...rawData, ...vulnerabilitiesWithContext];
           }
         });
@@ -118,12 +126,14 @@ export const ReportProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         const misconfigReport = report as MisconfigReport;
         misconfigReport.Results.forEach(result => {
           if (result.Misconfigurations) {
-            const misconfigsWithContext = result.Misconfigurations.map(misconfig => ({
-              ...misconfig,
-              Target: result.Target,
-              Class: result.Class,
-              Type: result.Type,
-            }));
+            const misconfigsWithContext = result.Misconfigurations.map(
+              misconfig => ({
+                ...misconfig,
+                Target: result.Target,
+                Class: result.Class,
+                Type: result.Type,
+              })
+            );
             rawData = [...rawData, ...misconfigsWithContext];
           }
         });
@@ -187,7 +197,9 @@ export const ReportProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     getFilterableFields,
   };
 
-  return <ReportContext.Provider value={value}>{children}</ReportContext.Provider>;
+  return (
+    <ReportContext.Provider value={value}>{children}</ReportContext.Provider>
+  );
 };
 
 export const useReport = (): ReportContextType => {

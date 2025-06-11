@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { BaseFinding, EKSCISControl } from '../../types';
 import { DetailModal } from '../modals/DetailModal';
 
@@ -11,7 +12,7 @@ interface EKSCISViewProps {
 export const EKSCISView: React.FC<EKSCISViewProps> = ({
   findings,
   onItemSelect,
-  selectedItem
+  selectedItem,
 }) => {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -30,51 +31,59 @@ export const EKSCISView: React.FC<EKSCISViewProps> = ({
 
   return (
     <>
-      <div className="bg-white rounded-md border border-github-border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-github-border">
-            <thead className="bg-github-bg">
+      <div className='bg-white rounded-md border border-github-border overflow-hidden'>
+        <div className='overflow-x-auto'>
+          <table className='min-w-full divide-y divide-github-border'>
+            <thead className='bg-github-bg'>
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope='col'
+                  className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
+                >
                   Severity
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope='col'
+                  className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
+                >
                   Control ID
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope='col'
+                  className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
+                >
                   Name
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope='col'
+                  className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
+                >
                   Failed Tests
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-github-border">
+            <tbody className='bg-white divide-y divide-github-border'>
               {findings.map((control, index) => (
                 <tr
                   key={`${control.id}-${index}`}
-                  className="hover:bg-github-bg cursor-pointer"
+                  className='hover:bg-github-bg cursor-pointer'
                   onClick={() => onItemSelect(control)}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(control.severity)}`}>
+                  <td className='px-6 py-4 whitespace-nowrap'>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(control.severity)}`}
+                    >
                       {control.severity.toLowerCase()}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-github-blue">
-                      {control.ID}
-                    </div>
+                  <td className='px-6 py-4 whitespace-nowrap'>
+                    <div className='text-sm text-github-blue'>{control.ID}</div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm">
-                      {control.Name}
-                    </div>
+                  <td className='px-6 py-4'>
+                    <div className='text-sm'>{control.Name}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm">
-                      {control.TotalFail || 0}
-                    </div>
+                  <td className='px-6 py-4 whitespace-nowrap'>
+                    <div className='text-sm'>{control.TotalFail || 0}</div>
                   </td>
                 </tr>
               ))}
@@ -82,8 +91,8 @@ export const EKSCISView: React.FC<EKSCISViewProps> = ({
           </table>
         </div>
 
-        <div className="bg-github-bg px-6 py-3 border-t border-github-border">
-          <p className="text-sm text-gray-500">
+        <div className='bg-github-bg px-6 py-3 border-t border-github-border'>
+          <p className='text-sm text-gray-500'>
             Showing {findings.length} failed controls
           </p>
         </div>
@@ -95,29 +104,39 @@ export const EKSCISView: React.FC<EKSCISViewProps> = ({
           onClose={() => onItemSelect(null as any)}
           renderContent={() => (
             <>
-              <div className="mt-6">
-                <h3 className="text-lg font-medium mb-2">Control Details</h3>
-                <table className="min-w-full">
+              <div className='mt-6'>
+                <h3 className='text-lg font-medium mb-2'>Control Details</h3>
+                <table className='min-w-full'>
                   <tbody>
-                    <tr className="border-t border-github-border">
-                      <td className="py-2 pr-4 text-sm font-medium">Control ID</td>
-                      <td className="py-2 text-sm">{selectedItem.ID}</td>
+                    <tr className='border-t border-github-border'>
+                      <td className='py-2 pr-4 text-sm font-medium'>
+                        Control ID
+                      </td>
+                      <td className='py-2 text-sm'>{selectedItem.ID}</td>
                     </tr>
-                    <tr className="border-t border-github-border">
-                      <td className="py-2 pr-4 text-sm font-medium">Name</td>
-                      <td className="py-2 text-sm">{selectedItem.Name}</td>
+                    <tr className='border-t border-github-border'>
+                      <td className='py-2 pr-4 text-sm font-medium'>Name</td>
+                      <td className='py-2 text-sm'>{selectedItem.Name}</td>
                     </tr>
-                    <tr className="border-t border-github-border">
-                      <td className="py-2 pr-4 text-sm font-medium">Severity</td>
-                      <td className="py-2 text-sm">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(selectedItem.severity)}`}>
+                    <tr className='border-t border-github-border'>
+                      <td className='py-2 pr-4 text-sm font-medium'>
+                        Severity
+                      </td>
+                      <td className='py-2 text-sm'>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(selectedItem.severity)}`}
+                        >
                           {selectedItem.severity.toLowerCase()}
                         </span>
                       </td>
                     </tr>
-                    <tr className="border-t border-github-border">
-                      <td className="py-2 pr-4 text-sm font-medium">Failed Tests</td>
-                      <td className="py-2 text-sm">{selectedItem.TotalFail || 0}</td>
+                    <tr className='border-t border-github-border'>
+                      <td className='py-2 pr-4 text-sm font-medium'>
+                        Failed Tests
+                      </td>
+                      <td className='py-2 text-sm'>
+                        {selectedItem.TotalFail || 0}
+                      </td>
                     </tr>
                   </tbody>
                 </table>

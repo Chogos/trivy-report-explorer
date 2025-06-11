@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { useReport } from '../context/ReportContext';
 import { BaseFinding } from '../types';
 import { getReportConfig } from '../utils/reportConfigRegistry';
@@ -12,8 +13,10 @@ const ReportViewer: React.FC = () => {
 
   if (items.length === 0) {
     return (
-      <div className="bg-white rounded-md border border-github-border p-8 text-center">
-        <p className="text-gray-500">No items found matching the current filters.</p>
+      <div className='bg-white rounded-md border border-github-border p-8 text-center'>
+        <p className='text-gray-500'>
+          No items found matching the current filters.
+        </p>
       </div>
     );
   }

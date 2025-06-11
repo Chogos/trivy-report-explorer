@@ -31,18 +31,34 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "DISABLE_ESLINT_PLUGIN=true react-scripts start",
-    "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
+    "format": "prettier --write src/**/*.{js,jsx,ts,tsx,json,css,md}",
+    "format:check": "prettier --check src/**/*.{js,jsx,ts,tsx,json,css,md}",
+    "style": "echo 'Stylelint temporarily disabled due to configuration issues'",
+    "style:fix": "echo 'Stylelint temporarily disabled due to configuration issues'",
+    "type-check": "tsc --noEmit",
+    "analyze": "npm run lint && npm run format:check && npm run style && npm run type-check",
+    "fix-all": "npm run lint:fix && npm run format && npm run style:fix",
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
-    ]
+      "react-app/jest",
+      "prettier"
+    ],
+    "rules": {
+      "no-console": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "react/no-array-index-key": "warn"
+    }
   },
   "browserslist": {
     "production": [
@@ -57,6 +73,12 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^6.3.0"
+    "eslint-config-prettier": "^9.1.0",
+    "gh-pages": "^6.3.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.5.3",
+    "stylelint": "^16.20.0",
+    "stylelint-config-standard": "^38.0.0"
   }
 }

@@ -1,12 +1,24 @@
 import React from 'react';
+
 import { ReportType, BaseFinding, FilterOptions, SortOptions } from './index';
 
 // Enhanced filter configuration for each report type
 export interface FilterConfig {
   id: string;
   name: string;
-  type: 'severity' | 'status' | 'resourceType' | 'packageName' | 'checkbox' | 'text';
-  options?: Array<{ value: string; label: string; color?: string; textColor?: string }>;
+  type:
+    | 'severity'
+    | 'status'
+    | 'resourceType'
+    | 'packageName'
+    | 'checkbox'
+    | 'text';
+  options?: Array<{
+    value: string;
+    label: string;
+    color?: string;
+    textColor?: string;
+  }>;
   placeholder?: string;
   defaultValue?: any;
   isReportSpecific?: boolean; // Whether this filter is specific to this report type

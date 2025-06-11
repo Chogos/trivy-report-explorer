@@ -1,4 +1,9 @@
-import React from 'react';
+import { EKSCISView } from '../components/report-views/EKSCISView';
+import { GenericReportView } from '../components/report-views/GenericReportView';
+import { LicenseView } from '../components/report-views/LicenseView';
+import { MisconfigurationView } from '../components/report-views/MisconfigurationView';
+import { SecretView } from '../components/report-views/SecretView';
+import { VulnerabilityView } from '../components/report-views/VulnerabilityView';
 import {
   ReportType,
   BaseFinding,
@@ -8,17 +13,16 @@ import {
   EKSCISControl,
   Misconfiguration,
   License,
-  Secret
+  Secret,
 } from '../types';
-import { ReportConfig, FilterConfig, SortConfig, ReportConfigRegistry } from '../types/reportConfig';
+import {
+  ReportConfig,
+  FilterConfig,
+  SortConfig,
+  ReportConfigRegistry,
+} from '../types/reportConfig';
 
 // Import view components
-import { VulnerabilityView } from '../components/report-views/VulnerabilityView';
-import { EKSCISView } from '../components/report-views/EKSCISView';
-import { MisconfigurationView } from '../components/report-views/MisconfigurationView';
-import { LicenseView } from '../components/report-views/LicenseView';
-import { SecretView } from '../components/report-views/SecretView';
-import { GenericReportView } from '../components/report-views/GenericReportView';
 
 // Common filter configurations
 const severityFilterConfig: FilterConfig = {
@@ -26,12 +30,37 @@ const severityFilterConfig: FilterConfig = {
   name: 'Severity',
   type: 'severity',
   options: [
-    { value: 'CRITICAL', label: 'Critical', color: 'bg-github-red', textColor: 'text-white' },
-    { value: 'HIGH', label: 'High', color: 'bg-github-orange', textColor: 'text-white' },
-    { value: 'MEDIUM', label: 'Medium', color: 'bg-github-yellow', textColor: 'text-gray-900' },
-    { value: 'LOW', label: 'Low', color: 'bg-github-green', textColor: 'text-white' },
-    { value: 'UNKNOWN', label: 'Unknown', color: 'bg-github-gray', textColor: 'text-white' },
-  ]
+    {
+      value: 'CRITICAL',
+      label: 'Critical',
+      color: 'bg-github-red',
+      textColor: 'text-white',
+    },
+    {
+      value: 'HIGH',
+      label: 'High',
+      color: 'bg-github-orange',
+      textColor: 'text-white',
+    },
+    {
+      value: 'MEDIUM',
+      label: 'Medium',
+      color: 'bg-github-yellow',
+      textColor: 'text-gray-900',
+    },
+    {
+      value: 'LOW',
+      label: 'Low',
+      color: 'bg-github-green',
+      textColor: 'text-white',
+    },
+    {
+      value: 'UNKNOWN',
+      label: 'Unknown',
+      color: 'bg-github-gray',
+      textColor: 'text-white',
+    },
+  ],
 };
 
 const statusFilterConfig: FilterConfig = {
@@ -39,23 +68,38 @@ const statusFilterConfig: FilterConfig = {
   name: 'Status',
   type: 'status',
   options: [
-    { value: 'fixed', label: 'Fixed', color: 'bg-green-100', textColor: 'text-green-800' },
-    { value: 'affected', label: 'Affected', color: 'bg-red-100', textColor: 'text-red-800' },
-    { value: 'unknown', label: 'Unknown', color: 'bg-gray-100', textColor: 'text-gray-800' },
-  ]
+    {
+      value: 'fixed',
+      label: 'Fixed',
+      color: 'bg-green-100',
+      textColor: 'text-green-800',
+    },
+    {
+      value: 'affected',
+      label: 'Affected',
+      color: 'bg-red-100',
+      textColor: 'text-red-800',
+    },
+    {
+      value: 'unknown',
+      label: 'Unknown',
+      color: 'bg-gray-100',
+      textColor: 'text-gray-800',
+    },
+  ],
 };
 
 const resourceTypeFilterConfig: FilterConfig = {
   id: 'resourceType',
   name: 'Resource Type',
-  type: 'resourceType'
+  type: 'resourceType',
 };
 
 const packageNameFilterConfig: FilterConfig = {
   id: 'packageName',
   name: 'Package Name',
   type: 'text',
-  placeholder: 'Filter by package name'
+  placeholder: 'Filter by package name',
 };
 
 // Common sort configurations
@@ -71,30 +115,54 @@ const resourceSortConfig: SortConfig[] = [
 
 // Helper functions for common filtering and sorting
 const applySeverityFilter = (data: any[], filters: FilterOptions): any[] => {
-  if (filters.severity.length === 0) return data;
-  return data.filter(item => filters.severity.includes(item.Severity || item.severity));
+  if (filters.severity.length === 0) {
+    return data;
+  }
+  return data.filter(item =>
+    filters.severity.includes(item.Severity || item.severity)
+  );
 };
 
 const applyStatusFilter = (data: any[], filters: FilterOptions): any[] => {
-  if (filters.status.length === 0) return data;
-  return data.filter(item => item.Status && filters.status.includes(item.Status));
+  if (filters.status.length === 0) {
+    return data;
+  }
+  return data.filter(
+    item => item.Status && filters.status.includes(item.Status)
+  );
 };
 
-const applyResourceTypeFilter = (data: any[], filters: FilterOptions): any[] => {
-  if (filters.resourceType.length === 0) return data;
-  return data.filter(item => item.Type && filters.resourceType.includes(item.Type));
+const applyResourceTypeFilter = (
+  data: any[],
+  filters: FilterOptions
+): any[] => {
+  if (filters.resourceType.length === 0) {
+    return data;
+  }
+  return data.filter(
+    item => item.Type && filters.resourceType.includes(item.Type)
+  );
 };
 
 const applyPackageNameFilter = (data: any[], filters: FilterOptions): any[] => {
-  if (!filters.packageName) return data;
+  if (!filters.packageName) {
+    return data;
+  }
   return data.filter(item =>
     item.PkgName?.toLowerCase().includes(filters.packageName.toLowerCase())
   );
 };
 
-const applySeveritySort = <T extends BaseFinding>(data: T[], sortOptions: SortOptions): T[] => {
+const applySeveritySort = <T extends BaseFinding>(
+  data: T[],
+  sortOptions: SortOptions
+): T[] => {
   const severityOrder: Record<string, number> = {
-    CRITICAL: 4, HIGH: 3, MEDIUM: 2, LOW: 1, UNKNOWN: 0
+    CRITICAL: 4,
+    HIGH: 3,
+    MEDIUM: 2,
+    LOW: 1,
+    UNKNOWN: 0,
   };
 
   return data.sort((a, b) => {
@@ -109,15 +177,16 @@ const applySeveritySort = <T extends BaseFinding>(data: T[], sortOptions: SortOp
 const vulnerabilityConfig: ReportConfig<BaseFinding & Vulnerability> = {
   id: ReportType.TRIVY_VULNERABILITY,
   name: 'Vulnerability Report',
-  description: 'Trivy vulnerability scan results for container images, filesystems, or repositories',
+  description:
+    'Trivy vulnerability scan results for container images, filesystems, or repositories',
   exampleCommand: 'trivy image --format json -o report.json [image-name]',
 
   detectFn: (json: any) => {
     return Boolean(
       json.SchemaVersion &&
-      json.ArtifactName &&
-      Array.isArray(json.Results) &&
-      json.Results.some((r: any) => r.Vulnerabilities)
+        json.ArtifactName &&
+        Array.isArray(json.Results) &&
+        json.Results.some((r: any) => r.Vulnerabilities)
     );
   },
 
@@ -125,7 +194,7 @@ const vulnerabilityConfig: ReportConfig<BaseFinding & Vulnerability> = {
     ...json,
     reportType: ReportType.TRIVY_VULNERABILITY,
     displayName: `Vulnerability Scan: ${json.ArtifactName}`,
-    description: `Scan type: ${json.ArtifactType}`
+    description: `Scan type: ${json.ArtifactType}`,
   }),
 
   viewComponent: VulnerabilityView,
@@ -134,7 +203,7 @@ const vulnerabilityConfig: ReportConfig<BaseFinding & Vulnerability> = {
     severityFilterConfig,
     statusFilterConfig,
     resourceTypeFilterConfig,
-    packageNameFilterConfig
+    packageNameFilterConfig,
   ],
 
   filterFn: (allVulnerabilities: Vulnerability[], filters: FilterOptions) => {
@@ -148,14 +217,11 @@ const vulnerabilityConfig: ReportConfig<BaseFinding & Vulnerability> = {
       title: vuln.Title || vuln.VulnerabilityID,
       description: vuln.Description,
       severity: vuln.Severity,
-      type: 'vulnerability'
+      type: 'vulnerability',
     })) as (BaseFinding & Vulnerability)[];
   },
 
-  availableSorts: [
-    ...severitySortConfig,
-    ...resourceSortConfig
-  ],
+  availableSorts: [...severitySortConfig, ...resourceSortConfig],
 
   sortFn: (data: (BaseFinding & Vulnerability)[], sortOptions: SortOptions) => {
     switch (sortOptions.field) {
@@ -163,7 +229,11 @@ const vulnerabilityConfig: ReportConfig<BaseFinding & Vulnerability> = {
         return applySeveritySort(data, sortOptions);
       case 'resource':
         const direction = sortOptions.direction === 'asc' ? 1 : -1;
-        return data.sort((a, b) => ((a as any).Target || '').localeCompare(((b as any).Target || '')) * direction);
+        return data.sort(
+          (a, b) =>
+            ((a as any).Target || '').localeCompare((b as any).Target || '') *
+            direction
+        );
       default:
         return data;
     }
@@ -176,23 +246,24 @@ const vulnerabilityConfig: ReportConfig<BaseFinding & Vulnerability> = {
       title: vuln.Title || vuln.VulnerabilityID,
       description: vuln.Description,
       severity: vuln.Severity,
-      type: 'vulnerability'
+      type: 'vulnerability',
     })) as (BaseFinding & Vulnerability)[];
-  }
+  },
 };
 
 const eksConfig: ReportConfig<BaseFinding & EKSCISControl> = {
   id: ReportType.EKS_CIS,
   name: 'EKS CIS Benchmark',
   description: 'Center for Internet Security (CIS) benchmark for Amazon EKS',
-  exampleCommand: 'trivy k8s --format json -o eks-cis-report.json cluster --compliance=eks-cis',
+  exampleCommand:
+    'trivy k8s --format json -o eks-cis-report.json cluster --compliance=eks-cis',
 
   detectFn: (json: any) => {
     return Boolean(
       json.ID &&
-      json.Title &&
-      json.Title.includes('EKS CIS') &&
-      Array.isArray(json.SummaryControls)
+        json.Title &&
+        json.Title.includes('EKS CIS') &&
+        Array.isArray(json.SummaryControls)
     );
   },
 
@@ -200,7 +271,7 @@ const eksConfig: ReportConfig<BaseFinding & EKSCISControl> = {
     ...json,
     reportType: ReportType.EKS_CIS,
     displayName: json.Title,
-    description: `EKS CIS Benchmark: ${json.ID}`
+    description: `EKS CIS Benchmark: ${json.ID}`,
   }),
 
   viewComponent: EKSCISView,
@@ -212,8 +283,8 @@ const eksConfig: ReportConfig<BaseFinding & EKSCISControl> = {
       name: 'Hide controls with zero failed tests',
       type: 'checkbox',
       defaultValue: false,
-      isReportSpecific: true
-    }
+      isReportSpecific: true,
+    },
   ],
 
   filterFn: (controls: EKSCISControl[], filters: FilterOptions) => {
@@ -251,22 +322,23 @@ const eksConfig: ReportConfig<BaseFinding & EKSCISControl> = {
       id: control.ID,
       title: control.Name,
       severity: control.Severity,
-      type: 'eks-control'
+      type: 'eks-control',
     })) as (BaseFinding & EKSCISControl)[];
-  }
+  },
 };
 
 const misconfigConfig: ReportConfig<BaseFinding & Misconfiguration> = {
   id: ReportType.TRIVY_MISCONFIG,
   name: 'Misconfiguration Report',
   description: 'Trivy infrastructure as code (IaC) and configuration scanning',
-  exampleCommand: 'trivy config --format json -o misconfig-report.json [directory]',
+  exampleCommand:
+    'trivy config --format json -o misconfig-report.json [directory]',
 
   detectFn: (json: any) => {
     return Boolean(
       json.Results &&
-      Array.isArray(json.Results) &&
-      json.Results.some((r: any) => r.Misconfigurations)
+        Array.isArray(json.Results) &&
+        json.Results.some((r: any) => r.Misconfigurations)
     );
   },
 
@@ -274,7 +346,7 @@ const misconfigConfig: ReportConfig<BaseFinding & Misconfiguration> = {
     ...json,
     reportType: ReportType.TRIVY_MISCONFIG,
     displayName: `Misconfiguration Scan: ${json.ArtifactName || 'Unknown'}`,
-    description: `Configuration scan for ${json.ArtifactType || 'file system'}`
+    description: `Configuration scan for ${json.ArtifactType || 'file system'}`,
   }),
 
   viewComponent: MisconfigurationView,
@@ -282,7 +354,7 @@ const misconfigConfig: ReportConfig<BaseFinding & Misconfiguration> = {
   availableFilters: [
     severityFilterConfig,
     statusFilterConfig,
-    resourceTypeFilterConfig
+    resourceTypeFilterConfig,
   ],
 
   filterFn: (misconfigs: Misconfiguration[], filters: FilterOptions) => {
@@ -292,18 +364,20 @@ const misconfigConfig: ReportConfig<BaseFinding & Misconfiguration> = {
     return filtered as (BaseFinding & Misconfiguration)[];
   },
 
-  availableSorts: [
-    ...severitySortConfig,
-    ...resourceSortConfig
-  ],
+  availableSorts: [...severitySortConfig, ...resourceSortConfig],
 
-  sortFn: (data: (BaseFinding & Misconfiguration)[], sortOptions: SortOptions) => {
+  sortFn: (
+    data: (BaseFinding & Misconfiguration)[],
+    sortOptions: SortOptions
+  ) => {
     switch (sortOptions.field) {
       case 'severity':
         return applySeveritySort(data, sortOptions);
       case 'resource':
         const direction = sortOptions.direction === 'asc' ? 1 : -1;
-        return data.sort((a, b) => ((a.type || '').localeCompare(b.type || '')) * direction);
+        return data.sort(
+          (a, b) => (a.type || '').localeCompare(b.type || '') * direction
+        );
       default:
         return data;
     }
@@ -316,22 +390,23 @@ const misconfigConfig: ReportConfig<BaseFinding & Misconfiguration> = {
       title: misconfig.Title,
       description: misconfig.Description,
       severity: misconfig.Severity,
-      type: 'misconfiguration'
+      type: 'misconfiguration',
     })) as (BaseFinding & Misconfiguration)[];
-  }
+  },
 };
 
 const licenseConfig: ReportConfig<BaseFinding & License> = {
   id: ReportType.TRIVY_LICENSE,
   name: 'License Scanning Report',
   description: 'Trivy software license scanning results',
-  exampleCommand: 'trivy fs --format json --security-checks license -o license-report.json [directory]',
+  exampleCommand:
+    'trivy fs --format json --security-checks license -o license-report.json [directory]',
 
   detectFn: (json: any) => {
     return Boolean(
       json.Results &&
-      Array.isArray(json.Results) &&
-      json.Results.some((r: any) => r.Licenses)
+        Array.isArray(json.Results) &&
+        json.Results.some((r: any) => r.Licenses)
     );
   },
 
@@ -339,15 +414,12 @@ const licenseConfig: ReportConfig<BaseFinding & License> = {
     ...json,
     reportType: ReportType.TRIVY_LICENSE,
     displayName: `License Scan: ${json.ArtifactName || 'Unknown'}`,
-    description: `License scan for ${json.ArtifactType || 'file system'}`
+    description: `License scan for ${json.ArtifactType || 'file system'}`,
   }),
 
   viewComponent: LicenseView,
 
-  availableFilters: [
-    resourceTypeFilterConfig,
-    packageNameFilterConfig
-  ],
+  availableFilters: [resourceTypeFilterConfig, packageNameFilterConfig],
 
   filterFn: (licenses: License[], filters: FilterOptions) => {
     let filtered = applyResourceTypeFilter(licenses, filters);
@@ -365,9 +437,13 @@ const licenseConfig: ReportConfig<BaseFinding & License> = {
     const direction = sortOptions.direction === 'asc' ? 1 : -1;
     switch (sortOptions.field) {
       case 'resource':
-        return data.sort((a, b) => ((a.type || '').localeCompare(b.type || '')) * direction);
+        return data.sort(
+          (a, b) => (a.type || '').localeCompare(b.type || '') * direction
+        );
       case 'package':
-        return data.sort((a, b) => ((a.PkgName || '').localeCompare(b.PkgName || '')) * direction);
+        return data.sort(
+          (a, b) => (a.PkgName || '').localeCompare(b.PkgName || '') * direction
+        );
       default:
         return data;
     }
@@ -379,22 +455,23 @@ const licenseConfig: ReportConfig<BaseFinding & License> = {
       id: `${license.PkgName}-${license.Name}`,
       title: license.Name,
       severity: 'UNKNOWN' as const,
-      type: 'license'
+      type: 'license',
     })) as (BaseFinding & License)[];
-  }
+  },
 };
 
 const secretConfig: ReportConfig<BaseFinding & Secret> = {
   id: ReportType.TRIVY_SECRET,
   name: 'Secret Scanning Report',
   description: 'Trivy secret scanning results',
-  exampleCommand: 'trivy fs --format json --security-checks secret -o secret-report.json [directory]',
+  exampleCommand:
+    'trivy fs --format json --security-checks secret -o secret-report.json [directory]',
 
   detectFn: (json: any) => {
     return Boolean(
       json.Results &&
-      Array.isArray(json.Results) &&
-      json.Results.some((r: any) => r.Secrets)
+        Array.isArray(json.Results) &&
+        json.Results.some((r: any) => r.Secrets)
     );
   },
 
@@ -402,15 +479,12 @@ const secretConfig: ReportConfig<BaseFinding & Secret> = {
     ...json,
     reportType: ReportType.TRIVY_SECRET,
     displayName: `Secret Scan: ${json.ArtifactName || 'Unknown'}`,
-    description: `Secret scan for ${json.ArtifactType || 'file system'}`
+    description: `Secret scan for ${json.ArtifactType || 'file system'}`,
   }),
 
   viewComponent: SecretView,
 
-  availableFilters: [
-    severityFilterConfig,
-    resourceTypeFilterConfig
-  ],
+  availableFilters: [severityFilterConfig, resourceTypeFilterConfig],
 
   filterFn: (secrets: Secret[], filters: FilterOptions) => {
     let filtered = applySeverityFilter(secrets, filters);
@@ -418,10 +492,7 @@ const secretConfig: ReportConfig<BaseFinding & Secret> = {
     return filtered as (BaseFinding & Secret)[];
   },
 
-  availableSorts: [
-    ...severitySortConfig,
-    ...resourceSortConfig
-  ],
+  availableSorts: [...severitySortConfig, ...resourceSortConfig],
 
   sortFn: (data: (BaseFinding & Secret)[], sortOptions: SortOptions) => {
     switch (sortOptions.field) {
@@ -429,7 +500,9 @@ const secretConfig: ReportConfig<BaseFinding & Secret> = {
         return applySeveritySort(data, sortOptions);
       case 'resource':
         const direction = sortOptions.direction === 'asc' ? 1 : -1;
-        return data.sort((a, b) => ((a.type || '').localeCompare(b.type || '')) * direction);
+        return data.sort(
+          (a, b) => (a.type || '').localeCompare(b.type || '') * direction
+        );
       default:
         return data;
     }
@@ -441,9 +514,9 @@ const secretConfig: ReportConfig<BaseFinding & Secret> = {
       id: `${secret.RuleID}-${secret.StartLine}`,
       title: secret.Title,
       severity: 'HIGH' as const, // Secrets are generally high severity
-      type: 'secret'
+      type: 'secret',
     })) as (BaseFinding & Secret)[];
-  }
+  },
 };
 
 // Generic fallback config
@@ -469,7 +542,7 @@ const genericConfig: ReportConfig<BaseFinding> = {
     return applySeveritySort(data, sortOptions);
   },
 
-  mapToBaseFinding: (data: any[]) => data
+  mapToBaseFinding: (data: any[]) => data,
 };
 
 // Registry of all report configurations
@@ -479,7 +552,7 @@ export const reportConfigRegistry: ReportConfigRegistry = {
   [ReportType.TRIVY_MISCONFIG]: misconfigConfig,
   [ReportType.TRIVY_LICENSE]: licenseConfig,
   [ReportType.TRIVY_SECRET]: secretConfig,
-  [ReportType.UNKNOWN]: genericConfig
+  [ReportType.UNKNOWN]: genericConfig,
 };
 
 // Helper functions to access registry
@@ -487,19 +560,23 @@ export const getReportConfig = (reportType: ReportType): ReportConfig => {
   return reportConfigRegistry[reportType] || genericConfig;
 };
 
-export const detectReportTypeFromRegistry = (json: any): {
+export const detectReportTypeFromRegistry = (
+  json: any
+): {
   type: ReportType;
   config: ReportConfig;
   transformedData: any | null;
 } => {
   for (const config of Object.values(reportConfigRegistry)) {
     if (config.detectFn(json)) {
-      const transformedData = config.transformFn ? config.transformFn(json) : { ...json, reportType: config.id };
+      const transformedData = config.transformFn
+        ? config.transformFn(json)
+        : { ...json, reportType: config.id };
 
       return {
         type: config.id,
         config,
-        transformedData
+        transformedData,
       };
     }
   }
@@ -507,10 +584,12 @@ export const detectReportTypeFromRegistry = (json: any): {
   return {
     type: ReportType.UNKNOWN,
     config: genericConfig,
-    transformedData: null
+    transformedData: null,
   };
 };
 
 export const getAllReportConfigs = (): ReportConfig[] => {
-  return Object.values(reportConfigRegistry).filter(config => config.id !== ReportType.UNKNOWN);
+  return Object.values(reportConfigRegistry).filter(
+    config => config.id !== ReportType.UNKNOWN
+  );
 };
