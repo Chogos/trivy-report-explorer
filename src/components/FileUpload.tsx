@@ -70,6 +70,7 @@ const FileUpload: React.FC = () => {
       } else {
         setError(`Failed to process the file: ${(err as Error).message}`);
       }
+      // eslint-disable-next-line no-console
       console.error('Error processing file:', err);
     }
   };
@@ -177,8 +178,8 @@ const FileUpload: React.FC = () => {
           <div className='mt-4'>
             <p className='font-medium'>Supported report types:</p>
             <ul className='list-disc pl-5 mt-2 space-y-2'>
-              {reportTypes.map((rt, index) => (
-                <li key={index}>
+              {reportTypes.map(rt => (
+                <li key={rt.name}>
                   <p className='font-medium'>{rt.name}</p>
                   <p className='text-sm'>{rt.description}</p>
                   <code className='block bg-red-100 px-2 py-1 rounded mt-1 text-xs'>
@@ -195,9 +196,9 @@ const FileUpload: React.FC = () => {
         <div className='mt-4 p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-md'>
           <p className='font-medium'>Looking for a sample report?</p>
           <div className='mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2'>
-            {sampleReports.map((report, index) => (
+            {sampleReports.map(report => (
               <button
-                key={index}
+                key={report.filename}
                 onClick={() => loadSampleReport(report.filename)}
                 className='text-sm text-github-blue hover:underline text-left'
               >

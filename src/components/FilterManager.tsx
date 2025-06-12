@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { useReport } from '../context/ReportContext';
-import { ReportType } from '../types';
+import { ReportType, TrivyReport, FilterOptions } from '../types';
 import { FilterConfig } from '../types/reportConfig';
 import { getReportConfig } from '../utils/reportConfigRegistry';
 
@@ -26,9 +26,10 @@ const FilterManager: React.FC = () => {
   // Extract unique resource types based on report type (for dynamic filters)
   const getResourceTypes = () => {
     if (reportType === ReportType.TRIVY_VULNERABILITY) {
-      const types = (report as any).Results.map((result: any) => result.Type);
+      const trivyReport = report as TrivyReport;
+      const types = trivyReport.Results.map(result => result.Type);
       const uniqueTypes = Array.from(new Set(types));
-      return uniqueTypes.map((type: any) => ({
+      return uniqueTypes.map(type => ({
         value: String(type),
         label: String(type),
       }));
@@ -38,43 +39,99 @@ const FilterManager: React.FC = () => {
 
   const resourceTypes: { value: string; label: string }[] = getResourceTypes();
 
+  // Type-safe helper to get array filter values
+  const getArrayFilterValue = (filterId: string): string[] => {
+    switch (filterId) {
+      case 'severity':
+        return filters.severity;
+      case 'status':
+        return filters.status;
+      case 'resourceType':
+        return filters.resourceType;
+      default:
+        return [];
+    }
+  };
+
   // Generic filter handlers
   const handleMultiSelectChange = (filterId: string, value: string) => {
-    const currentValues = (filters as any)[filterId] || [];
+    const currentValues = getArrayFilterValue(filterId);
     const newValues = currentValues.includes(value)
       ? currentValues.filter((v: string) => v !== value)
       : [...currentValues, value];
 
-    setFilters({
-      ...filters,
-      [filterId]: newValues,
-    });
+    // Type-safe update of filters
+    switch (filterId) {
+      case 'severity':
+        setFilters({ ...filters, severity: newValues });
+        break;
+      case 'status':
+        setFilters({ ...filters, status: newValues });
+        break;
+      case 'resourceType':
+        setFilters({ ...filters, resourceType: newValues });
+        break;
+    }
   };
 
   const handleTextChange = (filterId: string, value: string) => {
-    setFilters({
-      ...filters,
-      [filterId]: value,
-    });
+    // Type-safe update of text filters
+    switch (filterId) {
+      case 'packageName':
+        setFilters({ ...filters, packageName: value });
+        break;
+      default:
+        // For any other text filters, use dynamic assignment
+        setFilters({
+          ...filters,
+          [filterId]: value,
+        });
+    }
   };
 
   const handleCheckboxChange = (filterId: string, checked: boolean) => {
-    setFilters({
-      ...filters,
-      [filterId]: checked,
-    });
+    // Type-safe update of checkbox filters
+    switch (filterId) {
+      case 'hideZeroFailedTests':
+        setFilters({ ...filters, hideZeroFailedTests: checked });
+        break;
+      default:
+        // For any other checkbox filters, use dynamic assignment
+        setFilters({
+          ...filters,
+          [filterId]: checked,
+        });
+    }
   };
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const [field, direction] = e.target.value.split('-');
     setSortOptions({
-      field: field as any,
+      field: field as 'severity' | 'count' | 'resource' | 'package',
       direction: direction as 'asc' | 'desc',
     });
   };
 
+  // Type-safe helper to get filter values
+  const getFilterValue = (filterId: string): unknown => {
+    switch (filterId) {
+      case 'severity':
+        return filters.severity;
+      case 'status':
+        return filters.status;
+      case 'resourceType':
+        return filters.resourceType;
+      case 'packageName':
+        return filters.packageName;
+      case 'hideZeroFailedTests':
+        return filters.hideZeroFailedTests;
+      default:
+        return undefined;
+    }
+  };
+
   const clearFilters = () => {
-    const clearedFilters: any = {
+    const clearedFilters: FilterOptions = {
       severity: [],
       status: [],
       resourceType: [],
@@ -96,7 +153,7 @@ const FilterManager: React.FC = () => {
   const getActiveFilterCount = () => {
     let count = 0;
     availableFilters.forEach(filter => {
-      const value = (filters as any)[filter.id];
+      const value = getFilterValue(filter.id);
       if (
         filter.type === 'severity' ||
         filter.type === 'status' ||
@@ -116,7 +173,7 @@ const FilterManager: React.FC = () => {
 
   // Render different filter types
   const renderFilter = (filter: FilterConfig) => {
-    const value = (filters as any)[filter.id];
+    const value = getFilterValue(filter.id);
 
     switch (filter.type) {
       case 'severity':
@@ -127,27 +184,30 @@ const FilterManager: React.FC = () => {
               {filter.name}
             </label>
             <div className='flex flex-wrap gap-2'>
-              {filter.options?.map(option => (
-                <button
-                  key={option.value}
-                  onClick={() =>
-                    handleMultiSelectChange(filter.id, option.value)
-                  }
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm transition-colors
-                    ${
-                      value?.includes(option.value)
-                        ? `${option.color} ${option.textColor} ring-2 ring-offset-1 ring-github-blue`
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                >
-                  {option.color && (
-                    <span
-                      className={`w-2 h-2 rounded-full ${option.color} mr-2 ${!value?.includes(option.value) && 'opacity-70'}`}
-                    ></span>
-                  )}
-                  {option.label}
-                </button>
-              ))}
+              {filter.options?.map(option => {
+                const arrayValue = Array.isArray(value) ? value : [];
+                return (
+                  <button
+                    key={option.value}
+                    onClick={() =>
+                      handleMultiSelectChange(filter.id, option.value)
+                    }
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm transition-colors
+                      ${
+                        arrayValue.includes(option.value)
+                          ? `${option.color} ${option.textColor} ring-2 ring-offset-1 ring-github-blue`
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    {option.color && (
+                      <span
+                        className={`w-2 h-2 rounded-full ${option.color} mr-2 ${!arrayValue.includes(option.value) && 'opacity-70'}`}
+                      ></span>
+                    )}
+                    {option.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
         );
@@ -165,25 +225,28 @@ const FilterManager: React.FC = () => {
               {filter.name}
             </label>
             <div className='max-h-32 overflow-y-auto pr-2 space-y-1'>
-              {resourceOptions.map(option => (
-                <div key={option.value} className='flex items-center'>
-                  <input
-                    type='checkbox'
-                    id={`${filter.id}-${option.value}`}
-                    checked={value?.includes(option.value) || false}
-                    onChange={() =>
-                      handleMultiSelectChange(filter.id, option.value)
-                    }
-                    className='w-4 h-4 text-github-blue focus:ring-github-blue border-gray-300 rounded'
-                  />
-                  <label
-                    htmlFor={`${filter.id}-${option.value}`}
-                    className='ml-2 text-sm text-gray-700 cursor-pointer'
-                  >
-                    {option.label}
-                  </label>
-                </div>
-              ))}
+              {resourceOptions.map(option => {
+                const arrayValue = Array.isArray(value) ? value : [];
+                return (
+                  <div key={option.value} className='flex items-center'>
+                    <input
+                      type='checkbox'
+                      id={`${filter.id}-${option.value}`}
+                      checked={arrayValue.includes(option.value) || false}
+                      onChange={() =>
+                        handleMultiSelectChange(filter.id, option.value)
+                      }
+                      className='w-4 h-4 text-github-blue focus:ring-github-blue border-gray-300 rounded'
+                    />
+                    <label
+                      htmlFor={`${filter.id}-${option.value}`}
+                      className='ml-2 text-sm text-gray-700 cursor-pointer'
+                    >
+                      {option.label}
+                    </label>
+                  </div>
+                );
+              })}
             </div>
           </div>
         );
@@ -202,12 +265,12 @@ const FilterManager: React.FC = () => {
               <input
                 type='text'
                 id={filter.id}
-                value={value || ''}
+                value={typeof value === 'string' ? value : ''}
                 onChange={e => handleTextChange(filter.id, e.target.value)}
                 className='block w-full border border-github-border rounded px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-github-blue focus:border-transparent'
                 placeholder={filter.placeholder}
               />
-              {value && (
+              {typeof value === 'string' && value.length > 0 && (
                 <button
                   onClick={() => handleTextChange(filter.id, '')}
                   className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600'
@@ -239,7 +302,7 @@ const FilterManager: React.FC = () => {
               <input
                 type='checkbox'
                 id={filter.id}
-                checked={value || false}
+                checked={typeof value === 'boolean' ? value : false}
                 onChange={e =>
                   handleCheckboxChange(filter.id, e.target.checked)
                 }
@@ -402,13 +465,14 @@ const FilterManager: React.FC = () => {
             <span className='font-medium mr-2'>Active filters:</span>
             <div className='flex flex-wrap gap-2 mt-1'>
               {availableFilters.map(filter => {
-                const value = (filters as any)[filter.id];
+                const value = getFilterValue(filter.id);
                 if (!value) {
                   return null;
                 }
 
                 if (filter.type === 'severity' || filter.type === 'status') {
-                  return value.map((val: string) => {
+                  const arrayValue = Array.isArray(value) ? value : [];
+                  return arrayValue.map((val: string) => {
                     const option = filter.options?.find(
                       opt => opt.value === val
                     );
@@ -448,7 +512,8 @@ const FilterManager: React.FC = () => {
                     );
                   });
                 } else if (filter.type === 'resourceType') {
-                  return value.map((val: string) => (
+                  const arrayValue = Array.isArray(value) ? value : [];
+                  return arrayValue.map((val: string) => (
                     <span
                       key={`active-${filter.id}-${val}`}
                       className='inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100'
@@ -479,12 +544,13 @@ const FilterManager: React.FC = () => {
                   filter.type === 'text' ||
                   filter.type === 'packageName'
                 ) {
+                  const stringValue = typeof value === 'string' ? value : '';
                   return (
                     <span
                       key={`active-${filter.id}`}
                       className='inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100'
                     >
-                      {filter.name}: "{value}"
+                      {filter.name}: "{stringValue}"
                       <button
                         onClick={() => handleTextChange(filter.id, '')}
                         className='ml-1 text-gray-500 hover:text-gray-700'

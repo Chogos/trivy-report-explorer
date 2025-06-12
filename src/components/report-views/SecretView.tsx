@@ -5,7 +5,7 @@ import { DetailModal } from '../modals/DetailModal';
 
 interface SecretViewProps {
   findings: (BaseFinding & Secret)[];
-  onItemSelect: (item: BaseFinding & Secret) => void;
+  onItemSelect: (item: (BaseFinding & Secret) | null) => void;
   selectedItem: (BaseFinding & Secret) | null;
 }
 
@@ -69,9 +69,9 @@ export const SecretView: React.FC<SecretViewProps> = ({
               </tr>
             </thead>
             <tbody className='bg-white divide-y divide-github-border'>
-              {findings.map((secret, index) => (
+              {findings.map(secret => (
                 <tr
-                  key={`${secret.id}-${index}`}
+                  key={`${secret.RuleID}-${secret.StartLine}-${secret.EndLine}`}
                   className='hover:bg-github-bg cursor-pointer'
                   onClick={() => onItemSelect(secret)}
                 >
@@ -119,7 +119,7 @@ export const SecretView: React.FC<SecretViewProps> = ({
       {selectedItem && (
         <DetailModal
           item={selectedItem}
-          onClose={() => onItemSelect(null as any)}
+          onClose={() => onItemSelect(null)}
           renderContent={() => (
             <>
               <div className='mt-6'>

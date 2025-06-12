@@ -25,7 +25,7 @@ export interface Metadata {
   DiffIDs?: string[];
   RepoTags?: string[];
   RepoDigests?: string[];
-  ImageConfig?: any;
+  ImageConfig?: Record<string, unknown>;
 }
 
 export interface Result {
@@ -186,8 +186,8 @@ export interface ReportTypeInfo {
   name: string;
   description: string;
   exampleCommand: string;
-  detectFn: (json: any) => boolean;
-  transformFn?: (json: any) => any;
+  detectFn: (json: unknown) => boolean;
+  transformFn?: (json: unknown) => unknown;
 }
 
 export interface FilterOptions {
@@ -196,6 +196,8 @@ export interface FilterOptions {
   resourceType: string[];
   packageName: string;
   hideZeroFailedTests: boolean;
+  // Allow additional dynamic filter properties
+  [key: string]: string[] | string | boolean | undefined;
 }
 
 export interface SortOptions {

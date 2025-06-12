@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { useReport } from '../context/ReportContext';
-import { ReportType } from '../types';
+import { ReportType, TrivyReport } from '../types';
 
 const severityOptions = [
   {
@@ -75,9 +75,10 @@ const Filters: React.FC = () => {
   // Extract unique resource types based on report type
   const getResourceTypes = () => {
     if (reportType === ReportType.TRIVY_VULNERABILITY) {
-      const types = (report as any).Results.map((result: any) => result.Type);
+      const trivyReport = report as TrivyReport;
+      const types = trivyReport.Results.map(result => result.Type);
       const uniqueTypes = Array.from(new Set(types));
-      return uniqueTypes.map((type: any) => ({
+      return uniqueTypes.map(type => ({
         value: String(type),
         label: String(type),
       }));

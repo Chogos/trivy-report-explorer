@@ -21,7 +21,7 @@ import {
 interface ReportContextType {
   report: SupportedReport | null;
   reportType: ReportType;
-  setReport: (json: any) => void;
+  setReport: (json: unknown) => void;
   filters: FilterOptions;
   setFilters: (filters: FilterOptions) => void;
   sortOptions: SortOptions;
@@ -51,13 +51,14 @@ export const ReportProvider: React.FC<{ children: ReactNode }> = ({
     direction: 'desc',
   });
 
-  const setReport = (json: any) => {
+  const setReport = (json: unknown) => {
     const { type, transformedData } = detectReportTypeFromRegistry(json);
 
     if (transformedData) {
       setReportState(transformedData);
       setReportType(type);
     } else {
+      // eslint-disable-next-line no-console
       console.error('Unknown report type');
       setReportState(null);
       setReportType(ReportType.UNKNOWN);
@@ -97,7 +98,7 @@ export const ReportProvider: React.FC<{ children: ReactNode }> = ({
     const config = getReportConfig(reportType);
 
     // Extract raw data based on report type
-    let rawData: any[] = [];
+    let rawData: unknown[] = [];
 
     switch (reportType) {
       case ReportType.TRIVY_VULNERABILITY:

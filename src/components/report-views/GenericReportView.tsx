@@ -5,7 +5,7 @@ import { DetailModal } from '../modals/DetailModal';
 
 interface GenericReportViewProps {
   findings: BaseFinding[];
-  onItemSelect: (item: BaseFinding) => void;
+  onItemSelect: (item: BaseFinding | null) => void;
   selectedItem: BaseFinding | null;
 }
 
@@ -63,9 +63,9 @@ export const GenericReportView: React.FC<GenericReportViewProps> = ({
               </tr>
             </thead>
             <tbody className='bg-white divide-y divide-github-border'>
-              {findings.map((finding, index) => (
+              {findings.map(finding => (
                 <tr
-                  key={`${finding.id}-${index}`}
+                  key={finding.id}
                   className='hover:bg-github-bg cursor-pointer'
                   onClick={() => onItemSelect(finding)}
                 >
@@ -103,7 +103,7 @@ export const GenericReportView: React.FC<GenericReportViewProps> = ({
       {selectedItem && (
         <DetailModal
           item={selectedItem}
-          onClose={() => onItemSelect(null as any)}
+          onClose={() => onItemSelect(null)}
           renderContent={() => (
             <>
               <div className='mt-6'>

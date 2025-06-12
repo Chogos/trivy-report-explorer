@@ -5,7 +5,7 @@ import { DetailModal } from '../modals/DetailModal';
 
 interface EKSCISViewProps {
   findings: (BaseFinding & EKSCISControl)[];
-  onItemSelect: (item: BaseFinding & EKSCISControl) => void;
+  onItemSelect: (item: (BaseFinding & EKSCISControl) | null) => void;
   selectedItem: (BaseFinding & EKSCISControl) | null;
 }
 
@@ -63,9 +63,9 @@ export const EKSCISView: React.FC<EKSCISViewProps> = ({
               </tr>
             </thead>
             <tbody className='bg-white divide-y divide-github-border'>
-              {findings.map((control, index) => (
+              {findings.map(control => (
                 <tr
-                  key={`${control.id}-${index}`}
+                  key={control.ID || control.id || `control-${control.Name}`}
                   className='hover:bg-github-bg cursor-pointer'
                   onClick={() => onItemSelect(control)}
                 >
@@ -101,7 +101,7 @@ export const EKSCISView: React.FC<EKSCISViewProps> = ({
       {selectedItem && (
         <DetailModal
           item={selectedItem}
-          onClose={() => onItemSelect(null as any)}
+          onClose={() => onItemSelect(null)}
           renderContent={() => (
             <>
               <div className='mt-6'>

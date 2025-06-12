@@ -5,7 +5,7 @@ import { DetailModal } from '../modals/DetailModal';
 
 interface LicenseViewProps {
   findings: (BaseFinding & License)[];
-  onItemSelect: (item: BaseFinding & License) => void;
+  onItemSelect: (item: (BaseFinding & License) | null) => void;
   selectedItem: (BaseFinding & License) | null;
 }
 
@@ -54,9 +54,9 @@ export const LicenseView: React.FC<LicenseViewProps> = ({
               </tr>
             </thead>
             <tbody className='bg-white divide-y divide-github-border'>
-              {findings.map((license, index) => (
+              {findings.map(license => (
                 <tr
-                  key={`${license.id}-${index}`}
+                  key={`${license.Name}-${license.FilePath || ''}`}
                   className='hover:bg-github-bg cursor-pointer'
                   onClick={() => onItemSelect(license)}
                 >
@@ -105,7 +105,7 @@ export const LicenseView: React.FC<LicenseViewProps> = ({
       {selectedItem && (
         <DetailModal
           item={selectedItem}
-          onClose={() => onItemSelect(null as any)}
+          onClose={() => onItemSelect(null)}
           renderContent={() => (
             <>
               <div className='mt-6'>

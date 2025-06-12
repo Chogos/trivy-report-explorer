@@ -20,7 +20,7 @@ export interface FilterConfig {
     textColor?: string;
   }>;
   placeholder?: string;
-  defaultValue?: any;
+  defaultValue?: string | string[] | boolean;
   isReportSpecific?: boolean; // Whether this filter is specific to this report type
 }
 
@@ -34,7 +34,7 @@ export interface SortConfig {
 // View component interface - now generic to handle different data types
 export interface ViewComponent<T = BaseFinding> {
   findings: T[];
-  onItemSelect: (item: T) => void;
+  onItemSelect: (item: T | null) => void;
   selectedItem: T | null;
 }
 
@@ -46,23 +46,23 @@ export interface ReportConfig<T = BaseFinding> {
   exampleCommand: string;
 
   // Detection and transformation
-  detectFn: (json: any) => boolean;
-  transformFn?: (json: any) => any;
+  detectFn: (json: unknown) => boolean;
+  transformFn?: (json: unknown) => unknown;
 
   // UI Configuration
   viewComponent: React.ComponentType<ViewComponent<T>>;
 
   // Filtering Configuration
   availableFilters: FilterConfig[];
-  filterFn: (data: any[], filters: FilterOptions) => T[];
+  filterFn: (data: unknown[], filters: FilterOptions) => T[];
 
   // Sorting Configuration
   availableSorts: SortConfig[];
   sortFn: (data: T[], sortOptions: SortOptions) => T[];
 
   // Data mapping
-  mapToBaseFinding: (data: any[]) => T[];
+  mapToBaseFinding: (data: unknown[]) => T[];
 }
 
 // Registry type for all report configurations
-export type ReportConfigRegistry = Record<ReportType, ReportConfig<any>>;
+export type ReportConfigRegistry = Record<ReportType, ReportConfig<unknown>>;

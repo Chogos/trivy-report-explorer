@@ -8,20 +8,24 @@ const reportTypes: ReportTypeInfo[] = [
     description:
       'Trivy vulnerability scan results for container images, filesystems, or repositories',
     exampleCommand: 'trivy image --format json -o report.json [image-name]',
-    detectFn: (json: any) => {
+    detectFn: (json: unknown) => {
+      const report = json as Record<string, unknown>;
       return Boolean(
-        json.SchemaVersion &&
-          json.ArtifactName &&
-          Array.isArray(json.Results) &&
-          json.Results.some((r: any) => r.Vulnerabilities)
+        report.SchemaVersion &&
+          report.ArtifactName &&
+          Array.isArray(report.Results) &&
+          report.Results.some((r: Record<string, unknown>) => r.Vulnerabilities)
       );
     },
-    transformFn: (json: any) => ({
-      ...json,
-      reportType: ReportType.TRIVY_VULNERABILITY,
-      displayName: `Vulnerability Scan: ${json.ArtifactName}`,
-      description: `Scan type: ${json.ArtifactType}`,
-    }),
+    transformFn: (json: unknown) => {
+      const report = json as Record<string, unknown>;
+      return {
+        ...report,
+        reportType: ReportType.TRIVY_VULNERABILITY,
+        displayName: `Vulnerability Scan: ${report.ArtifactName}`,
+        description: `Scan type: ${report.ArtifactType}`,
+      };
+    },
   },
   {
     id: ReportType.EKS_CIS,
@@ -29,20 +33,25 @@ const reportTypes: ReportTypeInfo[] = [
     description: 'Center for Internet Security (CIS) benchmark for Amazon EKS',
     exampleCommand:
       'trivy k8s --format json -o eks-cis-report.json cluster --compliance=eks-cis',
-    detectFn: (json: any) => {
+    detectFn: (json: unknown) => {
+      const report = json as Record<string, unknown>;
       return Boolean(
-        json.ID &&
-          json.Title &&
-          json.Title.includes('EKS CIS') &&
-          Array.isArray(json.SummaryControls)
+        report.ID &&
+          report.Title &&
+          typeof report.Title === 'string' &&
+          report.Title.includes('EKS CIS') &&
+          Array.isArray(report.SummaryControls)
       );
     },
-    transformFn: (json: any) => ({
-      ...json,
-      reportType: ReportType.EKS_CIS,
-      displayName: json.Title,
-      description: `EKS CIS Benchmark: ${json.ID}`,
-    }),
+    transformFn: (json: unknown) => {
+      const report = json as Record<string, unknown>;
+      return {
+        ...report,
+        reportType: ReportType.EKS_CIS,
+        displayName: report.Title,
+        description: `EKS CIS Benchmark: ${report.ID}`,
+      };
+    },
   },
   {
     id: ReportType.TRIVY_MISCONFIG,
@@ -51,19 +60,25 @@ const reportTypes: ReportTypeInfo[] = [
       'Trivy infrastructure as code (IaC) and configuration scanning',
     exampleCommand:
       'trivy config --format json -o misconfig-report.json [directory]',
-    detectFn: (json: any) => {
+    detectFn: (json: unknown) => {
+      const report = json as Record<string, unknown>;
       return Boolean(
-        json.Results &&
-          Array.isArray(json.Results) &&
-          json.Results.some((r: any) => r.Misconfigurations)
+        report.Results &&
+          Array.isArray(report.Results) &&
+          report.Results.some(
+            (r: Record<string, unknown>) => r.Misconfigurations
+          )
       );
     },
-    transformFn: (json: any) => ({
-      ...json,
-      reportType: ReportType.TRIVY_MISCONFIG,
-      displayName: `Misconfiguration Scan: ${json.ArtifactName || 'Unknown'}`,
-      description: `Configuration scan for ${json.ArtifactType || 'file system'}`,
-    }),
+    transformFn: (json: unknown) => {
+      const report = json as Record<string, unknown>;
+      return {
+        ...report,
+        reportType: ReportType.TRIVY_MISCONFIG,
+        displayName: `Misconfiguration Scan: ${report.ArtifactName || 'Unknown'}`,
+        description: `Configuration scan for ${report.ArtifactType || 'file system'}`,
+      };
+    },
   },
   {
     id: ReportType.TRIVY_SECRET,
@@ -71,19 +86,23 @@ const reportTypes: ReportTypeInfo[] = [
     description: 'Trivy secret scanning results',
     exampleCommand:
       'trivy fs --format json --security-checks secret -o secret-report.json [directory]',
-    detectFn: (json: any) => {
+    detectFn: (json: unknown) => {
+      const report = json as Record<string, unknown>;
       return Boolean(
-        json.Results &&
-          Array.isArray(json.Results) &&
-          json.Results.some((r: any) => r.Secrets)
+        report.Results &&
+          Array.isArray(report.Results) &&
+          report.Results.some((r: Record<string, unknown>) => r.Secrets)
       );
     },
-    transformFn: (json: any) => ({
-      ...json,
-      reportType: ReportType.TRIVY_SECRET,
-      displayName: `Secret Scan: ${json.ArtifactName || 'Unknown'}`,
-      description: `Secret scan for ${json.ArtifactType || 'file system'}`,
-    }),
+    transformFn: (json: unknown) => {
+      const report = json as Record<string, unknown>;
+      return {
+        ...report,
+        reportType: ReportType.TRIVY_SECRET,
+        displayName: `Secret Scan: ${report.ArtifactName || 'Unknown'}`,
+        description: `Secret scan for ${report.ArtifactType || 'file system'}`,
+      };
+    },
   },
   {
     id: ReportType.TRIVY_LICENSE,
@@ -91,19 +110,23 @@ const reportTypes: ReportTypeInfo[] = [
     description: 'Trivy software license scanning results',
     exampleCommand:
       'trivy fs --format json --security-checks license -o license-report.json [directory]',
-    detectFn: (json: any) => {
+    detectFn: (json: unknown) => {
+      const report = json as Record<string, unknown>;
       return Boolean(
-        json.Results &&
-          Array.isArray(json.Results) &&
-          json.Results.some((r: any) => r.Licenses)
+        report.Results &&
+          Array.isArray(report.Results) &&
+          report.Results.some((r: Record<string, unknown>) => r.Licenses)
       );
     },
-    transformFn: (json: any) => ({
-      ...json,
-      reportType: ReportType.TRIVY_LICENSE,
-      displayName: `License Scan: ${json.ArtifactName || 'Unknown'}`,
-      description: `License scan for ${json.ArtifactType || 'file system'}`,
-    }),
+    transformFn: (json: unknown) => {
+      const report = json as Record<string, unknown>;
+      return {
+        ...report,
+        reportType: ReportType.TRIVY_LICENSE,
+        displayName: `License Scan: ${report.ArtifactName || 'Unknown'}`,
+        description: `License scan for ${report.ArtifactType || 'file system'}`,
+      };
+    },
   },
 ];
 
@@ -112,7 +135,7 @@ const reportTypes: ReportTypeInfo[] = [
  * @param json The parsed JSON object from a Trivy report
  * @returns The detected report type or UNKNOWN if not recognized
  */
-export function detectReportType(json: any): {
+export function detectReportType(json: unknown): {
   type: ReportType;
   info: ReportTypeInfo | undefined;
   transformedData: SupportedReport | null;
@@ -122,15 +145,19 @@ export function detectReportType(json: any): {
       if (reportTypeInfo.detectFn(json)) {
         const transformedData = reportTypeInfo.transformFn
           ? reportTypeInfo.transformFn(json)
-          : { ...json, reportType: reportTypeInfo.id };
+          : {
+              ...(json as Record<string, unknown>),
+              reportType: reportTypeInfo.id,
+            };
 
         return {
           type: reportTypeInfo.id,
           info: reportTypeInfo,
-          transformedData,
+          transformedData: transformedData as SupportedReport,
         };
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(
         `Error checking if JSON matches ${reportTypeInfo.id}:`,
         error

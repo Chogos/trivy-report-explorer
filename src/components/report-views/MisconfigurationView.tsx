@@ -5,7 +5,7 @@ import { DetailModal } from '../modals/DetailModal';
 
 interface MisconfigurationViewProps {
   findings: (BaseFinding & Misconfiguration)[];
-  onItemSelect: (item: BaseFinding & Misconfiguration) => void;
+  onItemSelect: (item: (BaseFinding & Misconfiguration) | null) => void;
   selectedItem: (BaseFinding & Misconfiguration) | null;
 }
 
@@ -69,9 +69,9 @@ export const MisconfigurationView: React.FC<MisconfigurationViewProps> = ({
               </tr>
             </thead>
             <tbody className='bg-white divide-y divide-github-border'>
-              {findings.map((misconfig, index) => (
+              {findings.map(misconfig => (
                 <tr
-                  key={`${misconfig.id}-${index}`}
+                  key={misconfig.ID}
                   className='hover:bg-github-bg cursor-pointer'
                   onClick={() => onItemSelect(misconfig)}
                 >
@@ -122,7 +122,7 @@ export const MisconfigurationView: React.FC<MisconfigurationViewProps> = ({
       {selectedItem && (
         <DetailModal
           item={selectedItem}
-          onClose={() => onItemSelect(null as any)}
+          onClose={() => onItemSelect(null)}
           renderContent={() => (
             <>
               <div className='mt-6'>
@@ -175,8 +175,8 @@ export const MisconfigurationView: React.FC<MisconfigurationViewProps> = ({
                     <div className='mt-6'>
                       <h3 className='text-lg font-medium mb-2'>References</h3>
                       <ul className='list-disc pl-5 space-y-1'>
-                        {selectedItem.References.map((ref, index) => (
-                          <li key={index} className='text-sm'>
+                        {selectedItem.References.map(ref => (
+                          <li key={ref} className='text-sm'>
                             <a
                               href={ref}
                               target='_blank'
